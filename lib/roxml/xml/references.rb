@@ -1,5 +1,3 @@
-require "rexml/xpath_parser"
-
 module ROXML
   class RequiredElementMissing < ArgumentError # :nodoc:
   end
@@ -55,6 +53,8 @@ module ROXML
 
     def namespacify(what)
       if what.to_s.present? && opts.namespace != false && ns = [opts.namespace, @instance.class.roxml_namespace, @default_namespace].compact.map(&:to_s).first
+        require "rexml/xpath_parser"
+
         parser = REXML::Parsers::XPathParser.new
         parsed = parser.parse what
 
@@ -102,7 +102,7 @@ module ROXML
     end
 
     def wrap(xml, opts = {:always_create => false})
-      wrap_with = @auto_vals ? auto_wrapper : wrapper
+      wrap_with = defined?(@auto_vals) && @auto_vals ? auto_wrapper : wrapper
 
       return xml if !wrap_with || xml.name == wrap_with
 
